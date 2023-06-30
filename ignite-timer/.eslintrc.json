@@ -19,6 +19,16 @@
         "prettier"
     ],
     "rules": {
+        "prettier/prettier": [
+			"error",
+			{
+				"singleQuote": true,
+				"endOfLine": "auto",
+				"tabWidth": 4,
+				"useTabs": true,
+				"printWidth": 140
+			}
+		],
         "react/react-in-jsx-scope": "off",
         "react/jsx-uses-react": "off",
         "@typescript-eslint/no-empty-interface": "off"
