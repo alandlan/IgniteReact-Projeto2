@@ -5,14 +5,14 @@ import { defaultTheme } from './styles/theme/default';
 import { Router } from './Router';
 
 function App() {
-	return (
-		<BrowserRouter>
-			<ThemeProvider theme={defaultTheme}>
-				<Router />
-				<GlobalStylesw />
-			</ThemeProvider>
-		</BrowserRouter>
-	);
+    return (
+        <BrowserRouter>
+            <ThemeProvider theme={defaultTheme}>
+                <Router />
+                <GlobalStylesw />
+            </ThemeProvider>
+        </BrowserRouter>
+    );
 }
 
 export default App;
