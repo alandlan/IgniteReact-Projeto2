@@ -7,7 +7,7 @@ export function Home() {
             <form action="">
                 <FormContainer>
                     <label htmlFor="task">Vou trabalhar em </label>
-                    <TaskInput type="text" list='tasks' name="task" id="task" placeholder="De um nome para o seu projeto" />
+                    <TaskInput type="text" list="tasks" name="task" id="task" placeholder="De um nome para o seu projeto" />
                     <datalist id="tasks">
                         <option value="Projeto 1" />
                         <option value="Projeto 11" />
