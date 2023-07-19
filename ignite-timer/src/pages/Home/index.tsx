@@ -2,6 +2,7 @@ import { Play } from 'phosphor-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
+import { differenceInSeconds } from 'date-fns';
 import {
     CountdownContainer,
     FormContainer,
@@ -11,7 +12,7 @@ import {
     StartCountdownButton,
     TaskInput
 } from './styles';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const newCycleFormValidationSchema = zod.object({
     task: zod.string().min(1, 'Nome do projeto é obrigatório'),
@@ -32,6 +33,7 @@ interface Cycle {
     id: string;
     task: string;
     minutesAmount: number;
+    startDate: Date;
 }
 
 export function Home() {
@@ -47,21 +49,30 @@ export function Home() {
         }
     });
 
+    const activeCycle = cycles.find((cycle) => cycle.id === currentCycleId);
+
+    useEffect(() => {
+        if (activeCycle) {
+            setInterval(() => {
+                setAmountSeconds(differenceInSeconds(new Date(), activeCycle.startDate));
+            }, 1000);
+        }
+    }, [activeCycle]);
+
     function handleCreateNewCycle(data: NewCycleFormData) {
         const id = String(new Date().getTime());
 
         const newCycle: Cycle = {
             id: id,
             task: data.task,
-            minutesAmount: data.minutesAmount
+            minutesAmount: data.minutesAmount,
+            startDate: new Date()
         };
 
         setCycles((state) => [...state, newCycle]);
         setCurrentCycleId(id);
         reset();
     }
-
-    const activeCycle = cycles.find((cycle) => cycle.id === currentCycleId);
 
     const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
     const currentSeconds = activeCycle ? totalSeconds - amountSeconds : 0;
