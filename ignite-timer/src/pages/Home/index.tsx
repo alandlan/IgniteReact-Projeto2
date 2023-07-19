@@ -56,7 +56,7 @@ export function Home() {
             minutesAmount: data.minutesAmount
         };
 
-        setCycles([...cycles, newCycle]);
+        setCycles((state) => [...state, newCycle]);
         setCurrentCycleId(id);
         reset();
     }
