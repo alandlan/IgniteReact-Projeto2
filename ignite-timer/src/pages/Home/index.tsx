@@ -2,7 +2,7 @@ import { Play } from 'phosphor-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as zod from 'zod';
-import { differenceInSeconds } from 'date-fns';
+import { differenceInSeconds, min } from 'date-fns';
 import {
     CountdownContainer,
     FormContainer,
@@ -53,9 +53,15 @@ export function Home() {
 
     useEffect(() => {
         if (activeCycle) {
-            setInterval(() => {
-                setAmountSeconds(differenceInSeconds(new Date(), activeCycle.startDate));
+            const interval = setInterval(() => {
+                const current = new Date();
+                const diff = differenceInSeconds(current, activeCycle.startDate);
+                setAmountSeconds(diff);
             }, 1000);
+
+            return () => {
+                clearInterval(interval);
+            };
         }
     }, [activeCycle]);
 
@@ -71,6 +77,7 @@ export function Home() {
 
         setCycles((state) => [...state, newCycle]);
         setCurrentCycleId(id);
+        setAmountSeconds(0);
         reset();
     }
 
@@ -82,6 +89,10 @@ export function Home() {
 
     const minutes = String(minutesAmount).padStart(2, '0');
     const seconds = String(secondsAmount).padStart(2, '0');
+
+    useEffect(() => {
+        document.title = `${minutes}:${seconds} | Pomodoro`;
+    }, [minutes, seconds]);
 
     //console.log(formState.errors);
 
