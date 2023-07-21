@@ -20,7 +20,7 @@ const newCycleFormValidationSchema = zod.object({
     task: zod.string().min(1, 'Nome do projeto é obrigatório'),
     minutesAmount: zod
         .number()
-        .min(5, 'O tempo mínimo é de 5 minutos')
+        .min(1, 'O tempo mínimo é de 5 minutos')
         .max(60, 'O tempo máximo é de 60 minutos')
 });
 
@@ -37,6 +37,7 @@ interface Cycle {
     minutesAmount: number;
     startDate: Date;
     interruptionDate?: Date;
+    finishedDate?: Date;
 }
 
 export function Home() {
@@ -54,19 +55,40 @@ export function Home() {
 
     const activeCycle = cycles.find((cycle) => cycle.id === currentCycleId);
 
+    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
+
     useEffect(() => {
         if (activeCycle) {
             const interval = setInterval(() => {
                 const current = new Date();
                 const diff = differenceInSeconds(current, activeCycle.startDate);
-                setAmountSeconds(diff);
+
+                if (diff >= totalSeconds) {
+                    setCycles((state) => {
+                        const updatedCycles = state.map((cycle) => {
+                            if (cycle.id === currentCycleId) {
+                                return {
+                                    ...cycle,
+                                    finishedDate: new Date()
+                                };
+                            }
+                            return cycle;
+                        });
+
+                        return updatedCycles;
+                    });
+                    setAmountSeconds(totalSeconds);
+                    clearInterval(interval);
+                } else {
+                    setAmountSeconds(diff);
+                }
             }, 1000);
 
             return () => {
                 clearInterval(interval);
             };
         }
-    }, [activeCycle]);
+    }, [activeCycle, totalSeconds, currentCycleId]);
 
     function handleCreateNewCycle(data: NewCycleFormData) {
         const id = String(new Date().getTime());
@@ -103,7 +125,6 @@ export function Home() {
         setAmountSeconds(0);
     }
 
-    const totalSeconds = activeCycle ? activeCycle.minutesAmount * 60 : 0;
     const currentSeconds = activeCycle ? totalSeconds - amountSeconds : 0;
 
     const minutesAmount = Math.floor(currentSeconds / 60);
@@ -143,8 +164,8 @@ export function Home() {
                     </datalist>
                     <label htmlFor="time">durante</label>
                     <MinutesAmountInput
-                        step={5}
-                        min={5}
+                        step={1}
+                        min={1}
                         max={60}
                         type="number"
                         id="time"
