@@ -26,8 +26,8 @@ export default function NewCycleForm() {
             </datalist>
             <label htmlFor="time">durante</label>
             <MinutesAmountInput
-                step={1}
-                min={1}
+                step={5}
+                min={5}
                 max={60}
                 type="number"
                 id="time"
