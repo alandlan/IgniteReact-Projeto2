@@ -18,7 +18,7 @@ export function Countdown() {
         if (activeCycle) {
             const interval = setInterval(() => {
                 const current = new Date();
-                const diff = differenceInSeconds(current, activeCycle.startDate);
+                const diff = differenceInSeconds(current, new Date(activeCycle.startDate));
 
                 if (diff >= totalSeconds) {
                     markCurrentCycleAsFinished();

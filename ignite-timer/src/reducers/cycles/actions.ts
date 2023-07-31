@@ -15,7 +15,7 @@ export function AddCycleAction(newCycle: Cycle) {
     };
 }
 
-export function InterruptCycleAction(currentCycleId: string) {
+export function InterruptCycleAction(currentCycleId: string | null) {
     return {
         type: ActionTypes.INTERRUPT_CYCLE,
         payload: {
@@ -24,7 +24,7 @@ export function InterruptCycleAction(currentCycleId: string) {
     };
 }
 
-export function FinishCycleAction(currentCycleId: string) {
+export function FinishCycleAction(currentCycleId: string | null) {
     return {
         type: ActionTypes.FINISH_CYCLE,
         payload: {
