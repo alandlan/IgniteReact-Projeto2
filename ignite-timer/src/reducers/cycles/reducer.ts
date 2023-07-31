@@ -1,4 +1,5 @@
 import { ActionTypes } from './actions';
+import { produce } from 'immer';
 
 export interface Cycle {
     id: string;
@@ -17,42 +18,38 @@ interface CyclesState {
 export function cylesReducer(state: CyclesState, action: any) {
     switch (action.type) {
         case ActionTypes.ADD_CYCLE:
-            return {
-                ...state,
-                cycles: [...state.cycles, action.payload.newCycle],
-                activeCycleId: action.payload.newCycle.id
-            };
-        case ActionTypes.INTERRUPT_CYCLE:
-            return {
-                ...state,
-                cycles: state.cycles.map((cycle) => {
-                    console.log('INTERRUPT_CYCLE', cycle, action.payload.currentCycleId);
-                    if (cycle.id === action.payload.currentCycleId) {
-                        return {
-                            ...cycle,
-                            interruptionDate: new Date()
-                        };
-                    } else {
-                        return cycle;
-                    }
-                }),
-                activeCycleId: null
-            };
-        case ActionTypes.FINISH_CYCLE:
-            return {
-                ...state,
-                cycles: state.cycles.map((cycle) => {
-                    if (cycle.id === action.payload.activeCycleId) {
-                        return {
-                            ...cycle,
-                            finishedDate: new Date()
-                        };
-                    } else {
-                        return cycle;
-                    }
-                }),
-                activeCycleId: null
-            };
+            return produce(state, (draftState) => {
+                draftState.cycles.push(action.payload.newCycle);
+                draftState.activeCycleId = action.payload.newCycle.id;
+            });
+        case ActionTypes.INTERRUPT_CYCLE: {
+            const currentCycleIndex = state.cycles.findIndex((cycle) => {
+                return cycle.id === state.activeCycleId;
+            });
+
+            if (currentCycleIndex < 0) {
+                return state;
+            }
+
+            return produce(state, (draftState) => {
+                draftState.cycles[currentCycleIndex].interruptionDate = new Date();
+                draftState.activeCycleId = null;
+            });
+        }
+        case ActionTypes.FINISH_CYCLE: {
+            const currentCycleIndex = state.cycles.findIndex((cycle) => {
+                return cycle.id === state.activeCycleId;
+            });
+
+            if (currentCycleIndex < 0) {
+                return state;
+            }
+
+            return produce(state, (draftState) => {
+                draftState.cycles[currentCycleIndex].finishedDate = new Date();
+                draftState.activeCycleId = null;
+            });
+        }
         default:
             return state;
     }
